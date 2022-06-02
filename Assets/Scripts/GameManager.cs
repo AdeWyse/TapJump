@@ -6,23 +6,30 @@ public class GameManager : MonoBehaviour
 {
     private GameObject[] movingPartsBackground;
     private GameObject player;
-    private GameObject[] obstacles;
+    private GameObject course;
     private float vanishingpoint = -21f;
     private float initalPos = 25f;
-    private float backgroundSpeed = 10f;
+    private float backgroundSpeed = 5f;
+    public bool gameStatus = true;
+    public bool gameResult = false;
     // Start is called before the first frame update
     void Start()
     {
         player = GameObject.Find("Player");
         movingPartsBackground = GameObject.FindGameObjectsWithTag("MovingBackground");
+        course = GameObject.Find("Course1");
     }
 
     // Update is called once per frame
     void Update()
     {
-        foreach(GameObject movingBackground in movingPartsBackground)
+        if (gameStatus)
         {
-            MoveBackground(movingBackground);
+            foreach (GameObject movingBackground in movingPartsBackground)
+            {
+                MoveBackground(movingBackground);
+            }
+            MoveObstacles(course);
         }
     }
 
@@ -35,5 +42,17 @@ public class GameManager : MonoBehaviour
             movingBackground.transform.position = new Vector2(initalPos, movingBackground.transform.position.y);
         }
         return;
+    }
+
+    void MoveObstacles(GameObject course)
+    {
+
+        Vector2 direction = new Vector2(-220f, course.transform.position.y);
+        course.transform.position = Vector2.MoveTowards(course.transform.position, direction, backgroundSpeed * Time.deltaTime);
+        if(course.transform.position.x <= -120f)
+        {
+            gameStatus = false;
+            gameResult = true;
+        }
     }
 }
