@@ -8,29 +8,44 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D playerRb;
     private int inputSimple;
     public Vector2 inputPos;
-    public float speed = 10f;
+    public Vector2 posFin;
+    public float speed = 50f;
     // Start is called before the first frame update
     void Start()
     {
         player = GameObject.Find("Player");
-        playerRb = player.GetComponent<Rigidbody2D>();
+       // playerRb = player.GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        MoveOnTouch();
+
+    }
+
+   void MoveOnTouch()
+    {
         inputSimple = Input.touchCount;
-        if(inputSimple > 0)
+        if (inputSimple > 0)
         {
             inputPos = Input.GetTouch(0).position;
-            Vector2 posInicial = new Vector2(player.transform.position.x, player.transform.position.y);
-            player.transform.position = Vector2.MoveTowards(inputPos, player.transform.position, speed * Time.deltaTime);
-            if(player.transform.position.y < -3.0f)
+            if (inputPos.y > 284f)
             {
-                player.transform.position = new Vector2(player.transform.position.x, -3f);
+                posFin = new Vector2(player.transform.position.x, 3.72f);
+                player.transform.position = Vector2.MoveTowards(player.transform.position, posFin, speed * Time.deltaTime);
+            }
+            if (inputPos.y <= 284f)
+            {
+                posFin = new Vector2(player.transform.position.x, -3.72f);
+                player.transform.position = Vector2.MoveTowards(player.transform.position, posFin, speed * Time.deltaTime);
             }
 
-        }
 
+        }
+        else
+        {
+            return;
+        }
     }
 }
