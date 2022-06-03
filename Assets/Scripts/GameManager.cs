@@ -32,7 +32,6 @@ public class GameManager : MonoBehaviour
     public void Set2()
     {
         chosenLevel = 1;
-        Debug.Log(chosenLevel);
 
         CallGame();
     }

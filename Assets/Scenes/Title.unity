@@ -846,10 +846,7 @@ MonoBehaviour:
   gameStatus: 1
   gameResult: 0
   atemptNumber: 0
-  levels:
-  - Course1
-  - Course2
-  chosenLevel: Course2
+  chosenLevel: 0
 --- !u!4 &1089439989
 Transform:
   m_ObjectHideFlags: 0

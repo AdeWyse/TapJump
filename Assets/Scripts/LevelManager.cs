@@ -7,7 +7,7 @@ public class LevelManager : MonoBehaviour
     private GameManager gameManager;
     private GameObject[] movingPartsBackground;
     private GameObject player;
-    private GameObject course;
+    public GameObject course;
     private float vanishingpoint = -21f;
     private float initalPos = 25f;
     private float backgroundSpeed = 5f;
@@ -61,6 +61,7 @@ public class LevelManager : MonoBehaviour
         atemptNumber = gameManager.atemptNumber;
         level = gameManager.chosenLevel;
         course = Instantiate(courses[level], new Vector3(-2.3f, -4f, 0f), new Quaternion(0,0,0,0));
+        course.SetActive(true);
 
 
         GetInitialPos();
