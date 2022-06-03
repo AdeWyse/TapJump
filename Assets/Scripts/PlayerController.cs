@@ -4,18 +4,20 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private GameManager gameManager;
+    private LevelManager levelManager;
     private GameObject player;
     private Rigidbody2D playerRb;
     private int inputSimple;
     public Vector2 inputPos;
     public Vector2 posFin;
     public float speed = 30f;
+
+    
     // Start is called before the first frame update
     void Start()
     {
         player = GameObject.Find("Player");
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
         // playerRb = player.GetComponent<Rigidbody2D>();
     }
 
@@ -51,16 +53,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Grrr");
 
         if (collision.gameObject.tag == "Obstacle")
         {
-
-            gameManager.gameStatus = false;
-            gameManager.gameResult = false;
+            levelManager.gameStatus = false;
         }
     }
+
 
 }
