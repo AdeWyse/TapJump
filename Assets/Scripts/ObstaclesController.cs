@@ -13,28 +13,22 @@ public class ObstaclesController : MonoBehaviour
         obstacle = this.gameObject;
         obstacle.SetActive(true);
         active = true;
-        StartCoroutine("Blink");
+        InvokeRepeating("Blink", 0.2f, Random.Range(0.3f, 0.9f));
 
     }
 
-    private IEnumerator Blink()
+    private void Blink()
     {
-        while (true)
-            yield return new WaitForSeconds(1);
+        if (active)
         {
-            if (active)
-            {
-                obstacle.SetActive(false);
-                active = false;
-            }
-            else
-            {
-                Debug.Log("here2");
-                obstacle.SetActive(true);
-                active = true;
-            }
+            obstacle.SetActive(false);
+            active = false;
+        }
+        else
+        {
+            obstacle.SetActive(true);
+            active = true;
         } 
-
     }
 
 }
