@@ -6,6 +6,7 @@ TagManager:
   tags:
   - MovingBackground
   - Obstacle
+  - Coin
   layers:
   - Default
   - TransparentFX

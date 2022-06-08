@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class LevelManager : MonoBehaviour
 {
@@ -14,14 +15,21 @@ public class LevelManager : MonoBehaviour
     public bool gameStatus;
     public bool gameResult;
     public int atemptNumber;
+    public int points;
+    public int pointsToCount = 0;
+    public int score;
 
     private int level;
 
     private Vector2 playerInitialPos;
     private Vector2 courseInitialPos;
     private Vector2[] backgroundInitialPos;
+    private GameObject[] coins;
 
     public GameObject[] courses;
+
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI atemptsText;
 
 
     // Start is called before the first frame update
@@ -40,12 +48,17 @@ public class LevelManager : MonoBehaviour
                 MoveBackground(movingBackground);
             }
             MoveObstacles(course);
+            PointsCount(course);
         }
         else
         {
             if (!gameResult)
             {
                 RestartOnLose();
+            }
+            else
+            {
+                score = points + pointsToCount;
             }
         }
     }
@@ -62,7 +75,7 @@ public class LevelManager : MonoBehaviour
         level = gameManager.chosenLevel;
         course = Instantiate(courses[level], new Vector3(-2.3f, -4f, 0f), new Quaternion(0,0,0,0));
         course.SetActive(true);
-
+        coins = GameObject.FindGameObjectsWithTag("Coin");
 
         GetInitialPos();
     }
@@ -83,7 +96,7 @@ public class LevelManager : MonoBehaviour
 
         Vector2 direction = new Vector2(-220f, course.transform.position.y);
         course.transform.position = Vector2.MoveTowards(course.transform.position, direction, backgroundSpeed * Time.deltaTime);
-        if(course.transform.position.x <= -120f)
+        if(course.transform.position.x <= -135.2f)
         {
             gameStatus = false;
             gameResult = true;
@@ -116,8 +129,29 @@ public class LevelManager : MonoBehaviour
             movingPartsBackground[i].transform.position = background;
             i++;
         }
+        foreach (GameObject coin in coins)
+        {
+            coin.SetActive(true);
+        }
+
+        score = 0;
+        points = 0;
+        pointsToCount = 0;
         atemptNumber++;
+        atemptsText.SetText("Atempt: " + atemptNumber);
         gameStatus = true;
         return;
+    }
+
+    private void PointsCount(GameObject course)
+    {
+        if(course.transform.position.x < -16.67)
+        {
+            float pos = course.transform.position.x;
+            float temp = (pos + 16.67f) / 6.6f;
+            points = (int)temp*-1;
+        }
+        score = points + pointsToCount;
+        scoreText.SetText("Score: " + score);
     }
 }

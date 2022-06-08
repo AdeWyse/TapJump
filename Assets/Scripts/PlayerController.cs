@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     public Vector2 posFin;
     public float speed = 30f;
 
+
     
     // Start is called before the first frame update
     void Start()
@@ -59,6 +60,13 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.tag == "Obstacle")
         {
             levelManager.gameStatus = false;
+        }
+
+
+        if (collision.gameObject.tag == "Coin")
+        {
+            levelManager.pointsToCount += 5;
+            collision.gameObject.SetActive(false);
         }
     }
 

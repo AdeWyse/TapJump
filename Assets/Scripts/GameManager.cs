@@ -22,16 +22,9 @@ public class GameManager : MonoBehaviour
     {
         
     }
-
-    public void Set1()
+    public void SetLevel(int chosen)
     {
-        chosenLevel = 0;
-        CallGame();
-    }
-
-    public void Set2()
-    {
-        chosenLevel = 1;
+        chosenLevel = chosen - 1;
 
         CallGame();
     }
@@ -39,6 +32,7 @@ public class GameManager : MonoBehaviour
     void CallGame()
     {
         DontDestroyOnLoad(gameManagerObject);
+        atemptNumber += 1;
         SceneManager.LoadSceneAsync("Game");
     }
 }
