@@ -19,7 +19,6 @@ public class PlayerController : MonoBehaviour
     {
         player = GameObject.Find("Player");
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
-        // playerRb = player.GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -66,7 +65,10 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.tag == "Coin")
         {
             levelManager.pointsToCount += 5;
-            collision.gameObject.SetActive(false);
+            AudioSource audioSource = collision.gameObject.GetComponent<AudioSource>();
+            audioSource.Play();
+            collision.gameObject.GetComponent<SpriteRenderer>().enabled = !collision.gameObject.GetComponent<SpriteRenderer>().enabled;
+            collision.gameObject.GetComponent<BoxCollider2D>().enabled = !collision.gameObject.GetComponent<BoxCollider2D>().enabled;
         }
     }
 

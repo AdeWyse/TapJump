@@ -27,6 +27,7 @@ public class LevelManager : MonoBehaviour
     private GameObject[] coins;
 
     public GameObject[] courses;
+    public AudioClip[] audios;
 
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI atemptsText;
@@ -52,8 +53,11 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
+            course.GetComponent<AudioSource>().Stop();
+
             if (!gameResult)
             {
+
                 RestartOnLose();
             }
             else
@@ -74,6 +78,8 @@ public class LevelManager : MonoBehaviour
         atemptNumber = gameManager.atemptNumber;
         level = gameManager.chosenLevel;
         course = Instantiate(courses[level], new Vector3(-2.3f, -4f, 0f), new Quaternion(0,0,0,0));
+        course.AddComponent<AudioSource>().clip = audios[level];
+        course.GetComponent<AudioSource>().Play();
         course.SetActive(true);
         coins = GameObject.FindGameObjectsWithTag("Coin");
 
@@ -120,7 +126,7 @@ public class LevelManager : MonoBehaviour
 
     private void RestartOnLose()
     {
-        
+        //Moves everthing to the initial positions
         player.transform.position = playerInitialPos;
         course.transform.position = courseInitialPos;
         int i = 0;
@@ -129,9 +135,15 @@ public class LevelManager : MonoBehaviour
             movingPartsBackground[i].transform.position = background;
             i++;
         }
+        //Restarts the coins
         foreach (GameObject coin in coins)
         {
-            coin.SetActive(true);
+            if (!coin.gameObject.GetComponent<SpriteRenderer>().enabled)
+            {
+                coin.gameObject.GetComponent<SpriteRenderer>().enabled = !coin.gameObject.GetComponent<SpriteRenderer>().enabled;
+                coin.gameObject.GetComponent<BoxCollider2D>().enabled = !coin.gameObject.GetComponent<BoxCollider2D>().enabled;
+            }
+          
         }
 
         score = 0;
@@ -140,6 +152,7 @@ public class LevelManager : MonoBehaviour
         atemptNumber++;
         atemptsText.SetText("Atempt: " + atemptNumber);
         gameStatus = true;
+        course.GetComponent<AudioSource>().Play();
         return;
     }
 

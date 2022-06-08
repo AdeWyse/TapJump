@@ -362,6 +362,11 @@ MonoBehaviour:
   - {fileID: 808524098529470852, guid: 72ea5b4514db96f4396c73c744505910, type: 3}
   - {fileID: 9112170089381802184, guid: f5a78e2d5a7d52f4ca40e3640245b0fc, type: 3}
   - {fileID: 3985952493180975686, guid: 94fb7b6dcd4f6d047a603764b4bff272, type: 3}
+  audios:
+  - {fileID: 8300000, guid: 755a6abbbd3607c43a7fae5d388944c2, type: 3}
+  - {fileID: 8300000, guid: d51f484bd9c012a4f985e49741142886, type: 3}
+  - {fileID: 8300000, guid: 4b79dce8ba0ce8b45b6e9cd64a9b1943, type: 3}
+  - {fileID: 8300000, guid: 2ad660c43f9f19742b90d3ca6577de22, type: 3}
   scoreText: {fileID: 1960306035}
   atemptsText: {fileID: 1996628337}
 --- !u!4 &316520365
@@ -404,7 +409,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
