@@ -17,13 +17,16 @@ public class LevelManager : MonoBehaviour
     private float backgroundSpeed = 5f;
     public bool gameStatus;
     public bool gameResult;
-    public int atemptNumber;
+    
     public int points;
     public int pointsToCount = 0;
-    public int score;
     public bool paused = false;
 
     private int level;
+
+    public int atemptNumber;
+    public int score;
+
 
     private Vector2 playerInitialPos;
     private Vector2 courseInitialPos;
@@ -87,6 +90,7 @@ public class LevelManager : MonoBehaviour
         gameStatus = true;
         gameResult = false;
         atemptNumber = PlayerPrefs.GetInt(level.ToString() + "atempts");
+        Debug.Log(PlayerPrefs.HasKey(level.ToString() + "Atempts"));
         if(atemptNumber == null || atemptNumber == 0)
         {
             atemptNumber = 1;
@@ -200,15 +204,24 @@ public class LevelManager : MonoBehaviour
 
     public void ClearAtempsGameManager()
     {
-        PlayerPrefs.SetInt(level.ToString() + "Atempts", 1);
-        PlayerPrefs.Save();
+        
     }
 
     public void SaveReturnMenu()
     {
-        PlayerPrefs.SetFloat(level.ToString() + "Score", score);
-        PlayerPrefs.SetInt(level.ToString() + "Atempts", atemptNumber);
-        PlayerPrefs.Save();
+       setPlayerInfoToJSON();
         SceneManager.LoadSceneAsync("Title");
+    }
+
+    public void getPlayerInfoFromJSON()
+    {
+
+    }
+
+    public void setPlayerInfoToJSON()
+    {
+        PlayerInfo playInfo = new PlayerInfo(level, score, atemptNumber);
+        PlayerInfoManager playerInfoManager = GameObject.Find("LevelManager").GetComponent<PlayerInfoManager>();
+        playerInfoManager.writeFile(playInfo);
     }
 }

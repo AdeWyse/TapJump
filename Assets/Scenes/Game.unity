@@ -630,6 +630,7 @@ GameObject:
   m_Component:
   - component: {fileID: 316520365}
   - component: {fileID: 316520364}
+  - component: {fileID: 316520366}
   m_Layer: 0
   m_Name: LevelManager
   m_TagString: Untagged
@@ -652,10 +653,10 @@ MonoBehaviour:
   course: {fileID: 0}
   gameStatus: 1
   gameResult: 0
-  paused: 0
-  atemptNumber: 0
   points: 0
   pointsToCount: 0
+  paused: 0
+  atemptNumber: 0
   score: 0
   courses:
   - {fileID: 3207781292683479093, guid: 7cd3ef47822bac34498c7174192964ea, type: 3}
@@ -684,6 +685,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &316520366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 316520363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77d8d29e5697cd14981cd7ae1ffb0b1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &400909779
 GameObject:
   m_ObjectHideFlags: 0
