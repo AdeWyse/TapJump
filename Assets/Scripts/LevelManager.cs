@@ -2,13 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
+
     private GameManager gameManager;
     private GameObject[] movingPartsBackground;
     private GameObject player;
     public GameObject course;
+    private GameObject pauseScreen;
     private float vanishingpoint = -21f;
     private float initalPos = 25f;
     private float backgroundSpeed = 5f;
@@ -18,6 +21,7 @@ public class LevelManager : MonoBehaviour
     public int points;
     public int pointsToCount = 0;
     public int score;
+    public bool paused = false;
 
     private int level;
 
@@ -42,7 +46,7 @@ public class LevelManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gameStatus && !gameResult)
+        if (gameStatus && !gameResult && !paused)
         {
             foreach (GameObject movingBackground in movingPartsBackground)
             {
@@ -53,16 +57,21 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            course.GetComponent<AudioSource>().Stop();
-
-            if (!gameResult)
+            if (paused)
             {
-
-                RestartOnLose();
+                course.GetComponent<AudioSource>().Pause();
             }
             else
             {
-                score = points + pointsToCount;
+                if (!gameResult)
+                {
+                    course.GetComponent<AudioSource>().Stop();
+                    RestartOnLose();
+                }
+                else
+                {
+                    score = points + pointsToCount;
+                }
             }
         }
     }
@@ -70,14 +79,20 @@ public class LevelManager : MonoBehaviour
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         player = GameObject.Find("Player");
+        pauseScreen = GameObject.Find("Pause");
+        pauseScreen.SetActive(false);
         movingPartsBackground = GameObject.FindGameObjectsWithTag("MovingBackground");
         backgroundInitialPos = new Vector2[movingPartsBackground.Length];
 
-        gameStatus = gameManager.gameStatus;
-        gameResult = gameManager.gameResult;
-        atemptNumber = gameManager.atemptNumber;
+        gameStatus = true;
+        gameResult = false;
+        atemptNumber = PlayerPrefs.GetInt(level.ToString() + "atempts");
+        if(atemptNumber == null || atemptNumber == 0)
+        {
+            atemptNumber = 1;
+        }
         level = gameManager.chosenLevel;
-        course = Instantiate(courses[level], new Vector3(-2.3f, -4f, 0f), new Quaternion(0,0,0,0));
+        course = Instantiate(courses[level], new Vector3(-2.3f, -4f, 0f), new Quaternion(0, 0, 0, 0));
         course.AddComponent<AudioSource>().clip = audios[level];
         course.GetComponent<AudioSource>().Play();
         course.SetActive(true);
@@ -102,7 +117,7 @@ public class LevelManager : MonoBehaviour
 
         Vector2 direction = new Vector2(-220f, course.transform.position.y);
         course.transform.position = Vector2.MoveTowards(course.transform.position, direction, backgroundSpeed * Time.deltaTime);
-        if(course.transform.position.x <= -135.2f)
+        if (course.transform.position.x <= -135.2f)
         {
             gameStatus = false;
             gameResult = true;
@@ -130,7 +145,7 @@ public class LevelManager : MonoBehaviour
         player.transform.position = playerInitialPos;
         course.transform.position = courseInitialPos;
         int i = 0;
-        foreach(Vector2 background in backgroundInitialPos)
+        foreach (Vector2 background in backgroundInitialPos)
         {
             movingPartsBackground[i].transform.position = background;
             i++;
@@ -166,5 +181,34 @@ public class LevelManager : MonoBehaviour
         }
         score = points + pointsToCount;
         scoreText.SetText("Score: " + score);
+    }
+
+    public void PauseButton()
+    {
+        pauseScreen.SetActive(true);
+        gameStatus = false;
+        paused = true;
+    }
+
+    public void UnPauseButton()
+    {
+        course.GetComponent<AudioSource>().UnPause();
+        pauseScreen.SetActive(false);
+        gameStatus = true;
+        paused = false;
+    }
+
+    public void ClearAtempsGameManager()
+    {
+        PlayerPrefs.SetInt(level.ToString() + "Atempts", 1);
+        PlayerPrefs.Save();
+    }
+
+    public void SaveReturnMenu()
+    {
+        PlayerPrefs.SetFloat(level.ToString() + "Score", score);
+        PlayerPrefs.SetInt(level.ToString() + "Atempts", atemptNumber);
+        PlayerPrefs.Save();
+        SceneManager.LoadSceneAsync("Title");
     }
 }
