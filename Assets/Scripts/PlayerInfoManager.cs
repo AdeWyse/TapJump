@@ -1,4 +1,3 @@
-
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -41,16 +40,16 @@ public class PlayerInfoManager : MonoBehaviour
         PlayerInfo writenData = this.readFile();
         if (writenData != null)
         {
-            for (int i = 0; i <= writenData.level.Length; i++)
-            {
-                if (playerInfo.score[i] < 0)
+            for(int i = 0; i<4; i++){
+                if (playInfo.score[i] >= writenData.score[i])
                 {
-                    playerInfo.score[i] = writenData.score[i];
-                    playerInfo.atempts[i] = writenData.atempts[i];
+                   writenData.score[i] = playInfo.score[i];
+                    writenData.atempts[i] = playInfo.atempts[i];
                 }
-            }
+             }
+            
         }
-            string dataJSON = JsonUtility.ToJson(playInfo);
+            string dataJSON = JsonUtility.ToJson(writenData);
 
         File.WriteAllText(saveFile, dataJSON);
     }

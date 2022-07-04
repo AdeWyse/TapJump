@@ -13,7 +13,7 @@ public class PlayerInfo
     public PlayerInfo(int level, int score, int  atempts)
     {
         int i = 0;
-        for(i=0; i<5; i++)
+        for(i=0; i<4; i++)
         {
             if (level == i)
             {

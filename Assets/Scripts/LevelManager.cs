@@ -12,7 +12,8 @@ public class LevelManager : MonoBehaviour
     private GameObject player;
     public GameObject course;
     private GameObject pauseScreen;
-    private float vanishingpoint = -21f;
+    private GameObject endScreen;
+    private float vanishingpoint = -25f;
     private float initalPos = 25f;
     private float backgroundSpeed = 5f;
     public bool gameStatus;
@@ -22,10 +23,13 @@ public class LevelManager : MonoBehaviour
     public int pointsToCount = 0;
     public bool paused = false;
 
+    public PlayerInfo initialInfo;
     private int level;
 
     public int atemptNumber;
     public int score;
+
+    private int highScore;
 
 
     private Vector2 playerInitialPos;
@@ -38,6 +42,11 @@ public class LevelManager : MonoBehaviour
 
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI atemptsText;
+
+    public TextMeshProUGUI endScore;
+    public TextMeshProUGUI endHScore;
+
+    public GameObject camera;
 
 
     // Start is called before the first frame update
@@ -74,15 +83,19 @@ public class LevelManager : MonoBehaviour
                 else
                 {
                     score = points + pointsToCount;
+                    winAction();
                 }
             }
         }
     }
     void Initialize()
     {
+        getPlayerInfoFromJSON();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         player = GameObject.Find("Player");
         pauseScreen = GameObject.Find("Pause");
+        endScreen = GameObject.Find("EndScreen");
+        endScreen.SetActive(false);
         pauseScreen.SetActive(false);
         movingPartsBackground = GameObject.FindGameObjectsWithTag("MovingBackground");
         backgroundInitialPos = new Vector2[movingPartsBackground.Length];
@@ -202,20 +215,15 @@ public class LevelManager : MonoBehaviour
         paused = false;
     }
 
-    public void ClearAtempsGameManager()
-    {
-        
-    }
-
-    public void SaveReturnMenu()
+    public void Save()
     {
        setPlayerInfoToJSON();
-        SceneManager.LoadSceneAsync("Title");
     }
 
     public void getPlayerInfoFromJSON()
     {
-
+        PlayerInfoManager playerInfoManager = GameObject.Find("LevelManager").GetComponent<PlayerInfoManager>();
+        initialInfo = playerInfoManager.readFile();
     }
 
     public void setPlayerInfoToJSON()
@@ -223,5 +231,35 @@ public class LevelManager : MonoBehaviour
         PlayerInfo playInfo = new PlayerInfo(level, score, atemptNumber);
         PlayerInfoManager playerInfoManager = GameObject.Find("LevelManager").GetComponent<PlayerInfoManager>();
         playerInfoManager.writeFile(playInfo);
+    }
+
+    public void CallMenu(){
+       // DontDestroyOnLoad(gameManagerObject);
+       Save();
+        SceneManager.LoadSceneAsync("Title");
+    }
+
+    public void TryAgain(){
+        SceneManager.LoadSceneAsync("Game");
+    }
+
+    public void winAction(){
+       if( initialInfo.score[level] > score){
+            highScore = initialInfo.score[level];
+       }else{
+            highScore = score;
+       }
+        Save();
+        endScreen.SetActive(true);
+        endScore.text = "Score: " + score;
+        endHScore.text = "High Score: " + highScore;
+    }
+
+    public void soundControl(bool choice){
+        if(!choice){
+            camera.GetComponent<AudioListener>().enabled = false;
+        }else{
+            camera.GetComponent<AudioListener>().enabled = true;
+        }
     }
 }
