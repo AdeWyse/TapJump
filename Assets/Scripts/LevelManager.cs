@@ -3,24 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
-
+//Script responsable for managing the interactions on the level
 public class LevelManager : MonoBehaviour
 {
 
     private GameManager gameManager;
-    private GameObject[] movingPartsBackground;
+    private GameObject[] movingPartsBackground;// Variable for the background objects
     private GameObject player;
     public GameObject course;
     private GameObject pauseScreen;
     private GameObject endScreen;
-    private float vanishingpoint = -25f;
-    private float initalPos = 25f;
+    private float vanishingpoint = -25f;//Variable for the point on the screen where the backgroung is outside the camera view
+    private float initalPos = 25f; //Initial position for the course spawnpoint
     private float backgroundSpeed = 5f;
-    public bool gameStatus;
-    public bool gameResult;
+    public bool gameStatus;//Variable controlling if the game is active or not
+    public bool gameResult;//Variable controlling if the player won
     
-    public int points;
-    public int pointsToCount = 0;
+    public int points; // points by distance
+    public int pointsToCount = 0; //points by picking coins
     public bool paused = false;
 
     public PlayerInfo initialInfo;
@@ -56,8 +56,13 @@ public class LevelManager : MonoBehaviour
     }
 
     // Update is called once per frame
+    /*Is  checking the gameStatus, gameResult and paused variables to control if the game is active and apropriates reactions*/
     void Update()
-    {
+    {   //Checks if the game is active, if the player has won and if the game is paused.
+        //If is active and not won and not paused moves the obstacled and counts points
+        //If paused calls the pause screen and stops all movemment from obstacles and background and stops sound
+        //If not active and not won moves averything to start position, zeros all points adds a atempt and restarts sound
+        //If not active and won calculates score and calls end screen
         if (gameStatus && !gameResult && !paused)
         {
             foreach (GameObject movingBackground in movingPartsBackground)
@@ -88,7 +93,11 @@ public class LevelManager : MonoBehaviour
             }
         }
     }
-    void Initialize()
+
+    /*Initializes the level by getting all needed references, 
+    setting booleans and ints to apropriated velues, 
+    spawning necessaries objects at appropriate positions and starting sound*/   
+ void Initialize()
     {
         getPlayerInfoFromJSON();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -106,7 +115,7 @@ public class LevelManager : MonoBehaviour
         {
             atemptNumber = 1;
         }
-        level = gameManager.chosenLevel;
+        level = gameManager.chosenLevel;// gets the level from the GameManager script
         course = Instantiate(courses[level], new Vector3(-2.3f, -4f, 0f), new Quaternion(0, 0, 0, 0));
         camera.GetComponent<AudioSource>().clip = audios[level];
         camera.GetComponent<AudioSource>().Play();
@@ -115,7 +124,8 @@ public class LevelManager : MonoBehaviour
 
         GetInitialPos();
     }
-
+    /*Moves the background objects to give the impression of a continuous line. 
+    After one object leaves the field of view its moved to the end of the other object so it can loop*/
     void MoveBackground(GameObject movingBackground)
     {
         Vector2 direction = new Vector2(-40f, movingBackground.transform.position.y);
@@ -126,7 +136,8 @@ public class LevelManager : MonoBehaviour
         }
         return;
     }
-
+    /*Moves the course object towards the player. 
+    When the end is reached changes the booleans and gives the won and not active status*/
     void MoveObstacles(GameObject course)
     {
 
@@ -139,7 +150,7 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-
+    /*Gets the initial position of all objects in the scene so it can be reset later*/
     private void GetInitialPos()
     {
         playerInitialPos = player.transform.position;
@@ -153,7 +164,7 @@ public class LevelManager : MonoBehaviour
         return;
     }
 
-
+    /*Moves averything to start position, zeros all points adds a atempt, restarts coins and restarts sound*/
     private void RestartOnLose()
     {
         //Moves everthing to the initial positions
@@ -185,26 +196,29 @@ public class LevelManager : MonoBehaviour
         camera.GetComponent<AudioSource>().Play();
         return;
     }
-
+    //Calculates the score and updates the screen text
+    //score = points by obstacle passed + points by pickng coins
     private void PointsCount(GameObject course)
     {
+        //calculares how many obstacled were passed by the distance between them
         if(course.transform.position.x < -16.67)
         {
             float pos = course.transform.position.x;
             float temp = (pos + 16.67f) / 6.6f;
             points = (int)temp*-1;
         }
+
         score = points + pointsToCount;
         scoreText.SetText("Score: " + score);
     }
-
+    /*Activates the pause screen and changes the pause boolean*/
     public void PauseButton()
     {
         pauseScreen.SetActive(true);
         gameStatus = false;
         paused = true;
     }
-
+    /*Deactivates the pause screen and changes the pause boolean*/
     public void UnPauseButton()
     {
         camera.GetComponent<AudioSource>().UnPause();
@@ -212,36 +226,36 @@ public class LevelManager : MonoBehaviour
         gameStatus = true;
         paused = false;
     }
-
+    /*Calls the function responsible for saving the game via PlayerInfoManager*/
     public void Save()
     {
        setPlayerInfoToJSON();
     }
-
+    /*Gets player data via PlayerInfoManager*/
     public PlayerInfo getPlayerInfoFromJSON()
     {
         PlayerInfoManager playerInfoManager = GameObject.Find("LevelManager").GetComponent<PlayerInfoManager>();
         initialInfo = playerInfoManager.readFile();
         return initialInfo;
     }
-
+    /*Saves playerData via PlayerInfoManager*/
     public void setPlayerInfoToJSON()
     {
         PlayerInfo playInfo = new PlayerInfo(level, score, atemptNumber);
         PlayerInfoManager playerInfoManager = GameObject.Find("LevelManager").GetComponent<PlayerInfoManager>();
         playerInfoManager.writeFile(playInfo);
     }
-
+    /*Saves the game and calls the title scene making sure the GameManager is destroyed*/
     public void CallMenu(){
        Save();
        Destroy(GameObject.Find("GameManager"));
         SceneManager.LoadSceneAsync("Title");
     }
-
+    //Reloads the scene
     public void TryAgain(){
         SceneManager.LoadSceneAsync("Game");
     }
-
+    /*Calls end screen and calculates values to be displayed*/
     public void winAction(int info){
        if( info> score){
             highScore = initialInfo.score[level];
@@ -254,7 +268,7 @@ public class LevelManager : MonoBehaviour
         endScore.text = "Score: " + score;
         endHScore.text = "High Score: " + highScore;
     }
-
+    /*Controls if there will be audio on the scene. It doens't stop the audio, it simply puts all volume to 0 or 1*/
     public void soundControl(){
         AudioSource[] sounds = GameObject.FindObjectsOfType<AudioSource>();
         if(camera.GetComponent<AudioSource>().volume > 0 ){
