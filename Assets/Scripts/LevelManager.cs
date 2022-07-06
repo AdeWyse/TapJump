@@ -71,19 +71,19 @@ public class LevelManager : MonoBehaviour
         {
             if (paused)
             {
-                course.GetComponent<AudioSource>().Pause();
+                camera.GetComponent<AudioSource>().Pause();
             }
             else
             {
                 if (!gameResult)
                 {
-                    course.GetComponent<AudioSource>().Stop();
+                    camera.GetComponent<AudioSource>().Stop();
                     RestartOnLose();
                 }
                 else
                 {
                     score = points + pointsToCount;
-                    winAction();
+                    winAction(initialInfo.score[(level)]);
                 }
             }
         }
@@ -99,19 +99,17 @@ public class LevelManager : MonoBehaviour
         pauseScreen.SetActive(false);
         movingPartsBackground = GameObject.FindGameObjectsWithTag("MovingBackground");
         backgroundInitialPos = new Vector2[movingPartsBackground.Length];
-
+        initialInfo = getPlayerInfoFromJSON();
         gameStatus = true;
         gameResult = false;
-        atemptNumber = PlayerPrefs.GetInt(level.ToString() + "atempts");
-        Debug.Log(PlayerPrefs.HasKey(level.ToString() + "Atempts"));
         if(atemptNumber == null || atemptNumber == 0)
         {
             atemptNumber = 1;
         }
         level = gameManager.chosenLevel;
         course = Instantiate(courses[level], new Vector3(-2.3f, -4f, 0f), new Quaternion(0, 0, 0, 0));
-        course.AddComponent<AudioSource>().clip = audios[level];
-        course.GetComponent<AudioSource>().Play();
+        camera.GetComponent<AudioSource>().clip = audios[level];
+        camera.GetComponent<AudioSource>().Play();
         course.SetActive(true);
         coins = GameObject.FindGameObjectsWithTag("Coin");
 
@@ -184,7 +182,7 @@ public class LevelManager : MonoBehaviour
         atemptNumber++;
         atemptsText.SetText("Atempt: " + atemptNumber);
         gameStatus = true;
-        course.GetComponent<AudioSource>().Play();
+        camera.GetComponent<AudioSource>().Play();
         return;
     }
 
@@ -209,7 +207,7 @@ public class LevelManager : MonoBehaviour
 
     public void UnPauseButton()
     {
-        course.GetComponent<AudioSource>().UnPause();
+        camera.GetComponent<AudioSource>().UnPause();
         pauseScreen.SetActive(false);
         gameStatus = true;
         paused = false;
@@ -220,10 +218,11 @@ public class LevelManager : MonoBehaviour
        setPlayerInfoToJSON();
     }
 
-    public void getPlayerInfoFromJSON()
+    public PlayerInfo getPlayerInfoFromJSON()
     {
         PlayerInfoManager playerInfoManager = GameObject.Find("LevelManager").GetComponent<PlayerInfoManager>();
         initialInfo = playerInfoManager.readFile();
+        return initialInfo;
     }
 
     public void setPlayerInfoToJSON()
@@ -234,8 +233,8 @@ public class LevelManager : MonoBehaviour
     }
 
     public void CallMenu(){
-       // DontDestroyOnLoad(gameManagerObject);
        Save();
+       Destroy(GameObject.Find("GameManager"));
         SceneManager.LoadSceneAsync("Title");
     }
 
@@ -243,23 +242,30 @@ public class LevelManager : MonoBehaviour
         SceneManager.LoadSceneAsync("Game");
     }
 
-    public void winAction(){
-       if( initialInfo.score[level] > score){
+    public void winAction(int info){
+       if( info> score){
             highScore = initialInfo.score[level];
        }else{
             highScore = score;
        }
         Save();
+         camera.GetComponent<AudioSource>().Stop();
         endScreen.SetActive(true);
         endScore.text = "Score: " + score;
         endHScore.text = "High Score: " + highScore;
     }
 
-    public void soundControl(bool choice){
-        if(!choice){
-            camera.GetComponent<AudioListener>().enabled = false;
+    public void soundControl(){
+        AudioSource[] sounds = GameObject.FindObjectsOfType<AudioSource>();
+        if(camera.GetComponent<AudioSource>().volume > 0 ){
+            foreach(AudioSource sound in sounds){
+                sound.volume = 0;
+            };
+            
         }else{
-            camera.GetComponent<AudioListener>().enabled = true;
+             foreach(AudioSource sound in sounds){
+                sound.volume = 1;
+            };
         }
     }
 }

@@ -30,13 +30,23 @@ public class PlayerInfoManager : MonoBehaviour
         }
         else
         {
-            playerInfo = null;
+            playerInfo = new PlayerInfo();
+
         }
         return playerInfo;
     }
 
+    public void Create(){
+        File.Create(saveFile);
+        playerInfo = new PlayerInfo();
+        this.writeFile(playerInfo);
+
+        
+    }
+
     public void writeFile(PlayerInfo playInfo)
     {
+        
         PlayerInfo writenData = this.readFile();
         if (writenData != null)
         {
@@ -52,6 +62,8 @@ public class PlayerInfoManager : MonoBehaviour
             string dataJSON = JsonUtility.ToJson(writenData);
 
         File.WriteAllText(saveFile, dataJSON);
+
+
     }
 
 }

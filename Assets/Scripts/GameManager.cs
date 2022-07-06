@@ -6,11 +6,16 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     private GameObject gameManagerObject;
+    private PlayerInfoManager info;
     public int chosenLevel;
 
     private void Start()
     {
         gameManagerObject = GameObject.Find("GameManager");
+        if(PlayerPrefs.GetString("unity.player_session_count") == "1"){
+            info = new PlayerInfoManager();
+            info.Create();
+       }
     }
     public void SetLevel(int chosen)
     {
